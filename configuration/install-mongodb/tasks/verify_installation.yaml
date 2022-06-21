@@ -1,0 +1,21 @@
+---
+- name: Verify installation mongo
+  ansible.builtin.command: mongo --version
+  register: mongo_version
+
+- name: Verify installation mongos
+  ansible.builtin.command: mongos --version
+  register: mongos_version
+
+- name: Verify installation mongod
+  ansible.builtin.command: mongod --version
+  register: mongod_version
+
+- name: Show the output
+  ansible.builtin.debug:
+    # var: mongosd_version
+    msg: "{{ item }}"
+  loop:
+    - "{{ mongo_version.stdout_lines }}"
+    - "{{ mongos_version.stdout_lines }}"
+    - "{{ mongod_version.stdout_lines }}"

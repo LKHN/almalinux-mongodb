@@ -1,0 +1,6 @@
+---
+# defaults file for install-mongodb
+mongodb_major_version: "5.0" # Major version of MongoDB
+releasever: "8" # Use Mongo EL8 repositories. TODO: Delete it and change it to $releasever after EL9 support.
+enable_sha1: yes # Enable SHA1 for AlmaLinux OS 9's default crypto policy. TODO: Delete it after rpm packages signed with stronger than SHA-1.
+install_atlas_cli: yes # Install the Atlas CLI

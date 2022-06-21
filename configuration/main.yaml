@@ -1,0 +1,9 @@
+---
+- name: Install MongoDB on AlmaLinux OS
+  hosts: all
+  become: yes
+  gather_facts: no
+
+
+  roles:
+    - install-mongodb

@@ -1,0 +1,55 @@
+---
+- name: Install tools for building the SELinux policies
+  ansible.builtin.dnf:
+    name: checkpolicy
+    state: latest
+
+- name: Check if mongo SELinux modules already installed
+  ansible.builtin.shell: semodule -l -m | grep -E "mongodb"
+  register: is_module_installed
+
+- name: Install MongoDB SELinux modules
+  block:
+    - name: Copy cgroup and netstat type enforcement rules
+      ansible.builtin.copy:
+        src: "{{ item.from }}"
+        dest: "{{ item.to }}"
+      loop:
+        - {
+            from: "mongodb_cgroup_memory.te",
+            to: "/tmp/mongodb_cgroup_memory.te",
+          }
+        - { from: "mongodb_proc_net.te", 
+            to: "/tmp/mongodb_proc_net.te" 
+          }
+
+    - name: Build and install cgroup
+      ansible.builtin.command: "{{ item }}" 
+      args:
+        chdir: /tmp
+      loop:
+        - checkmodule -M -m -o mongodb_cgroup_memory.mod mongodb_cgroup_memory.te
+        - semodule_package -o mongodb_cgroup_memory.pp -m mongodb_cgroup_memory.mod
+        - semodule -i mongodb_cgroup_memory.pp
+
+    - name: Build and install netstat
+      ansible.builtin.command: "{{ item }}" 
+      args:
+        chdir: /tmp
+      loop:
+        - checkmodule -M -m -o mongodb_proc_net.mod mongodb_proc_net.te
+        - semodule_package -o mongodb_proc_net.pp -m mongodb_proc_net.mod
+        - semodule -i mongodb_proc_net.pp
+  when: is_module_installed is not search("mongodb.*mongodb_cgroup_memory.*mongodb_proc_net.*")
+
+- name: Find SELinux leftover files
+  ansible.builtin.find:
+    paths: /tmp
+    patterns: '*.te,*.mod,*.pp'
+  register: selinux_leftovers
+
+- name: Cleanup SELinux leftover files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ selinux_leftovers.files }}"

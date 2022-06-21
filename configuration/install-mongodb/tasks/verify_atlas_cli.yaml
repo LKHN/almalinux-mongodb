@@ -1,0 +1,9 @@
+---
+- name: Verify successful installation of the Atlas CLI
+  ansible.builtin.command: atlas --version
+  register: atlas_version
+
+- name: Show the output
+  ansible.builtin.debug:
+    # var: atlas_version
+    msg: "{{ atlas_version.stdout_lines }}"

@@ -1,0 +1,16 @@
+---
+- name: Upgrade the system
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  register: upgrade_status
+
+- name: Reboot the system
+  ansible.builtin.reboot:
+  when: upgrade_status is changed
+
+- name: Remove old kernels
+  ansible.builtin.command: dnf -y remove --oldinstallonly
+  register: removeoldoutput
+  changed_when: removeoldoutput.rc == 0
+  ignore_errors: yes

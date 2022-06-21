@@ -1,0 +1,21 @@
+galaxy_info:
+  author: Elkhan Mammadli
+  description: Install MongoDB Community Edition on AlmaLinux OS
+
+  license: GPL-2.0-or-later
+
+  min_ansible_version: 2.12
+
+  platforms:
+  - name: EL
+    versions:
+    - 8
+    - 9
+
+  galaxy_tags:
+  - almalinux
+  - almalinux8
+  - almalinux9
+  - mongodb
+  - el8
+  - el9

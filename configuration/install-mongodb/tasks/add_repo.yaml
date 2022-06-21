@@ -1,0 +1,16 @@
+---
+- name: Add MongoDB EL repo
+  ansible.builtin.yum_repository:
+    name: mongodb-org-{{ mongodb_major_version }}
+    description: MongoDB Repository
+    baseurl: https://repo.mongodb.org/yum/redhat/{{ releasever }}/mongodb-org/{{ mongodb_major_version }}/{{ ansible_architecture }}/
+    enabled: yes
+    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongodb_major_version }}.asc
+
+# See: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-red-hat/#configure-the-package-management-system-yum
+# [mongodb-org-5.0]
+# name=MongoDB Repository
+# baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/5.0/x86_64/
+# gpgcheck=1
+# enabled=1
+# gpgkey=https://www.mongodb.org/static/pgp/server-5.0.asc

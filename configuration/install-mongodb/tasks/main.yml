@@ -1,0 +1,36 @@
+---
+# tasks file for install-mongodb
+- name: Wait 600 seconds for all instances become reachable
+  ansible.builtin.wait_for_connection:
+
+- name: Gather facts
+  ansible.builtin.setup:
+
+- name: Upgrade the system
+  ansible.builtin.import_tasks: upgrade_system.yaml
+
+- name: Add MongoDB EL Repo
+  ansible.builtin.import_tasks: add_repo.yaml
+
+- name: Check if SELinux in enforcing
+  ansible.builtin.command: cat /sys/fs/selinux/enforce
+  register: is_enforce
+
+- name: Build SELinux policies
+  ansible.builtin.include_tasks: configure_selinux.yaml
+  when: is_enforce.stdout == '1'
+
+- name: Install MongoDB
+  ansible.builtin.import_tasks: install_mongodb.yaml
+
+- name: Verifiy the MongoDB installation
+  ansible.builtin.import_tasks: verify_installation.yaml
+
+# TODO: Remove architecture conditional when atlas cli available for AArch64
+- name: Install Atlas CLI
+  ansible.builtin.include_tasks: install_atlas_cli.yaml
+  when: ansible_facts['architecture'] == 'x86_64' and install_atlas_cli | bool
+
+- name: Verifiy Atlas CLI
+  ansible.builtin.include_tasks: verify_atlas_cli.yaml
+  when: ansible_facts['architecture'] == 'x86_64' and install_atlas_cli | bool

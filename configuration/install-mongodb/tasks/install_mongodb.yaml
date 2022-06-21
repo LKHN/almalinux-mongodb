@@ -1,0 +1,16 @@
+---
+- name: Enable SHA1 on AlmaLinux OS 9
+  ansible.builtin.command: update-crypto-policies --set DEFAULT:SHA1
+  when: ansible_facts['distribution_major_version'] == '9' and enable_sha1 | bool
+
+- name: Install MongoDB CE
+  ansible.builtin.dnf:
+    name: mongodb-org
+    state: latest
+    update_cache: yes
+
+- name: Start and Enable mongodb
+  ansible.builtin.systemd:
+    name: mongod
+    state: started
+    enabled: yes

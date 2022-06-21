@@ -1,0 +1,6 @@
+---
+- name: Install Atlas CLI
+  ansible.builtin.dnf:
+    name: mongodb-atlas
+    state: latest
+    update_cache: yes
